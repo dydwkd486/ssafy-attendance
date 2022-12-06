@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/ssafy-attendance/static/css/main.aec90153.css",
+    "main.js": "/ssafy-attendance/static/js/main.b4265627.js",
+    "static/media/사유서1.jpg": "/ssafy-attendance/static/media/사유서1.ed545f51203725d95b38.jpg",
+    "static/media/logo.svg": "/ssafy-attendance/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "static/media/사인칸.PNG": "/ssafy-attendance/static/media/사인칸.b22d3f17bee78b5e5b25.PNG",
+    "index.html": "/ssafy-attendance/index.html",
+    "main.aec90153.css.map": "/ssafy-attendance/static/css/main.aec90153.css.map",
+    "main.b4265627.js.map": "/ssafy-attendance/static/js/main.b4265627.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aec90153.css",
+    "static/js/main.b4265627.js"
+  ]
+}
