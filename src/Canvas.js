@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 // import img from './지원금.PNG'
 import img from './사유서1.jpg'
-import "./App.css"
-import { Button, Modal } from 'semantic-ui-react'
+// import "./App.css"
+import { Button, Modal,Image as Images } from 'semantic-ui-react'
+import jsPDF from 'jspdf'
 const Canvas = (props) => {
   const [testSrc, setTestSrc] = useState('')
   const [open, setOpen] = React.useState(false)
@@ -14,6 +15,11 @@ const Canvas = (props) => {
   let canvas, canvasFont, canvasSubmit;
   let ctx, ctxFont, ctxSubmit;
   let image;
+
+  useEffect(()=>{
+    toImage()
+    console.log(props.inputs)
+  }, [props.inputs])
 
   function draw() {
 
@@ -124,9 +130,14 @@ const Canvas = (props) => {
     ctxSubmit.drawImage(canvasFont, 0, 0);
 
     let link = document.createElement('a');
-    const fileName = '' + props.inputs.location + '_' + props.inputs.classNum + '반_' + props.inputs.name
-    link.download = fileName + ".JPG";
+    const fileName = '출결확인서_'+props.inputs.name +'_['+ props.inputs.location + '_' + props.inputs.classNum + '반]'
+    // link.download = fileName + ".JPG";
     link.href = canvasSubmit.toDataURL();
+    var pdf = new jsPDF("p", "mm", "a4");
+    var width = pdf.internal.pageSize.getWidth();
+    var height = pdf.internal.pageSize.getHeight();
+    pdf.addImage(link.href, 'JPEG', 0, 0, width, height);
+    pdf.save(fileName+".pdf");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -147,8 +158,8 @@ const Canvas = (props) => {
 
   useEffect(() => {
     clearCanvas()
+    toImage()
   })
-
 
 
 
@@ -156,7 +167,12 @@ const Canvas = (props) => {
 
   return (
     <>
-      <div >
+      <Images Fluid src={testSrc} alt="이미지 결과보기" />
+
+      <Button onClick={downloadCanvas} primary>
+            {'다운로드  >'}
+          </Button>
+          <div >
         <canvas
           style={{ display: 'none' }}
           id="canvasTop"
@@ -179,33 +195,6 @@ const Canvas = (props) => {
           height={2339}
         />
       </div>
-
-
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        onOpen={() => setOpen(true)}
-        trigger={<Button primary
-          onClick={toImage}
-          className="generate-button"
-        >생성하기</Button>}
-        style={{ width: '90%',maxWidth:'1070px' }}
-      >
-        <Modal.Header style={{ backgroundColor: '#f9fafb' }}> 미리 보기</Modal.Header>
-        <Modal.Content image scrolling>
-
-
-          <Modal.Description>
-            <img src={testSrc} alt="이미지 미리보기" />
-
-          </Modal.Description>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={downloadCanvas} primary>
-            {'다운로드  >'}
-          </Button>
-        </Modal.Actions>
-      </Modal>
       <img src={props.inputs.sign} ref={signRef} width='10px' style={{ display: 'none' }} alt="sign" />
     </>
   )

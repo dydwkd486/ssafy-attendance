@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Input } from 'semantic-ui-react'
+import { Button, Input,Header, Divider,Select, Dropdown, Label } from 'semantic-ui-react'
 import img from './사인칸.PNG'
-import "./App.css"
+
 const UserInput = (props) => {
   const [ctx, setCtx] = useState(null)
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState();
   const canvasRef = useRef();
-  const [totalcost, setTotalcost] = useState(0);
-  const [totalDaysCost, setTotalDaysCost] = useState(props.inputs.totalDays);
-  const [attendDaysCost, setAttendDaysCost] = useState(0);
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -34,27 +31,17 @@ const UserInput = (props) => {
       ...props.inputs,
       [name]: value
     })
-    console.log(value)
-    if(name == "totalDays"){
-      setTotalDaysCost(value);
-    }
-    if(name == "attendDays"){
-      setAttendDaysCost(value);
-    }
-    if(attendDaysCost!=0 && totalDaysCost!=0){
-      if(name == "totalDays"){
-        setTotalcost(((attendDaysCost*(10000/value)).toFixed(0)*100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-        
-      }
-      if(name == "attendDays"){
-        setTotalcost(((value*(10000/totalDaysCost)).toFixed(0)*100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-        
-      }
-      console.log(totalcost)
-    }
-    console.log(props.inputs)
+    
 
   }
+  const handleOnChange = (e, data) => {
+    const { value, name } = data
+    
+    props.setInputs({
+      ...props.inputs,
+      [name]: value
+    })
+ }
 
   const clearCanvas = () => {
     const c = canvasRef.current.getContext("2d");
@@ -68,6 +55,10 @@ const UserInput = (props) => {
     }
     i.src = img
     setCtx(c)
+    props.setInputs({
+      ...props.inputs,
+      sign: i
+    })
   }
 
   const startDraw = (event) => {
@@ -89,10 +80,10 @@ const UserInput = (props) => {
 
       }
     setImage(canvasRef.current.toDataURL())
-    props.setInputs({
-      ...props.inputs,
-      sign: image
-    })
+    // props.setInputs({
+    //   ...props.inputs,
+    //   sign: image
+    // })
 
   }
 
@@ -118,10 +109,10 @@ const UserInput = (props) => {
       }
     }
     setImage(canvasRef.current.toDataURL())
-    props.setInputs({
-      ...props.inputs,
-      sign: image
-    })
+    // props.setInputs({
+    //   ...props.inputs,
+    //   sign: image
+    // })
 
   }
 
@@ -135,95 +126,75 @@ const UserInput = (props) => {
     })
   }
 
+  const attendanceTimeOptions = [
+    { key: '0', value: '0', text: '오전' },
+    { key: '1', value: '1', text: '오후' },
+    { key: '2', value: '2', text: '종일' },
+  ]
+  const attendanceTypeOptions = [
+    { key: '0', value: '0', text: '공가' },
+    { key: '1', value: '1', text: '사유' },
+  ]
 
   return (
-    <div className="userInput">
-      {/* <div className="input-box input-once">
-        <p>몇월 교육 지원금 인가요?</p>
-        <p style={{ color: 'grey' }}>*틀리는 분이 많습니다 ex) 10월 1일 서명 => 9월이 맞습니다</p>
-        <Input size='mini' name="attendMonth" onChange={onChange} placeholder="달" defaultValue={props.inputs.attendMonth} /> <br />
-      </div> */}
+    <div className="">
       <div className="input-box  input-once">
-        <p>이름</p>
-        <Input size='mini' name="name" onChange={onChange} placeholder="이름" /> <br />
+        <Input label='이름' name="name" onChange={onChange} placeholder="홍길동" /> <br />
       </div>
       <div className="input-box">
-        <p>지역 / 반(숫자만)</p>
         <div className="input-flex">
-          <Input size='mini' name="location" onChange={onChange} placeholder="지역" />
-          <span>/</span>
+          <Input label='지역' name="location" onChange={onChange} placeholder="서울" />
 
-          <Input size='mini' name="classNum" onChange={onChange} placeholder="반" className="second-input" />
+          <Input label='반' name="classNum" onChange={onChange} placeholder="13" className="second-input" />
         </div>
       </div>
       <div className="input-box">
-        <p>생년월일</p>
         <div className="input-flex">
-          <Input size='mini' name="birth" onChange={onChange} placeholder="990306" />
+          <Input label='생년월일' name="birth" onChange={onChange} placeholder="990306" />
         </div>
       </div>
+      <Divider />
       <div className="input-box">
-        <p>사유 일자(년/월/일)</p>  
-        <div className="input-flex">
-          <Input size='mini' name="attendanceYear" onChange={onChange} placeholder="2023년" />
-          <span>/</span>
-          <Input size='mini' name="attendanceMonth" onChange={onChange} placeholder="몇월" className="second-input" />
-          <span>/</span>
-          <Input size='mini' name="attendanceDay" onChange={onChange} placeholder="몇일" className="second-input" />          
-        </div>
-      </div>
-      <div className="input-box">
-        <p>사유 기간</p>
-        <div className="input-flex">
-        <select name="attendanceTime" onChange={onChange}>
-          <option value="0">오전</option>
-          <option value="1">오후</option>
-          <option value="2">종일</option>
-        </select>
-         </div>
-      </div>
-      <div className="input-box">
-        <p>공가/사유 선택, 사유 내용</p>
-        <div className="input-flex">
-        <select name="attendanceType" onChange={onChange}>
-          <option value="0">공가</option>
-          <option value="1">사유</option>
-        </select>
-          
-          <Input size='mini' name="attendanceText" onChange={onChange} placeholder="사유내용" />
-        </div>
-      </div>
-      <div className="input-box">
-        <p>상세 내용</p>
-        <p style={{ color: 'grey' }}>*어떤 이유때문에 사유서를 적성하는지 상세 내용에 작성하시면 됩니다.</p>
-        <div className="input-flex">
-          <Input size='mini' className='text' name="attendanceDetailText" onChange={onChange} placeholder="상세내용"  />
-        </div>
-      </div>
-      <div className="input-box">
-        <p>사유 장소</p>
-        <p style={{ color: 'grey' }}>*어느 장소에서 사유를 하게 되었는지 작성하세요.</p>
-        <div className="input-flex">
-          <Input size='mini' name="attendanceLocation" onChange={onChange} placeholder="장소" />
-        </div>
+        <Header as='h3'>사유 일자</Header>
+          <Input  name="attendanceYear" label={{ content: '년' }} labelPosition='right' onChange={onChange} placeholder="2023" style={{width: '100px',marginRight: '50px'}}/>
+          {/* <span>/</span> */}
+          <Input  name="attendanceMonth" label={{ content: '월' }} labelPosition='right'onChange={onChange} placeholder="11" className="second-input" style={{width: '50px',marginRight: '50px'}}/>
+          {/* <span>/</span> */}
+          <Input  name="attendanceDay" label={{ content: '일' }} labelPosition='right' onChange={onChange} placeholder="27" className="second-input" style={{width: '50px',marginRight: '50px'}}/>          
+      <Header as='h3'>사유 기간</Header>
+      <Select name="attendanceTime" onChange={handleOnChange} placeholder='선택해주세요' options={attendanceTimeOptions}/>
+
+      <Header as='h3'>공가/사유 선택, 사유 내용</Header>
+      <Input fluid labelPosition='Left' type='text' placeholder='사유내용'>
+        <Label>
+          <Dropdown name="attendanceType" onChange={handleOnChange} defaultValue='0' options={attendanceTypeOptions}></Dropdown>
+        </Label>
+        <input name="attendanceText" onChange={onChange}/>
+      </Input>
       </div>
 
-      <div className="input-box">
-        <p>제출일 (월 / 일)</p>
+      <Header as='h3'>상세 내용</Header>
+      <p style={{ color: 'grey' }}>*어떤 이유때문에 사유서를 적성하는지 상세 내용에 작성하시면 됩니다.</p>
+      <Input fluid className='text' name="attendanceDetailText" onChange={onChange} placeholder="상세내용"  />
+
+      <Header as='h3'>사유 장소</Header>
+      <p style={{ color: 'grey' }}>*어느 장소에서 사유를 하게 되었는지 작성하세요.</p>
+      <Input name="attendanceLocation" onChange={onChange} placeholder="장소" />
+      <Divider />
+      <Header as='h3'>제출일 (월 / 일)</Header>
         <p style={{ color: 'grey' }}>*보통 오늘 날짜를 작성하면 됩니다.</p>
         <div className="input-flex">
-          <Input size='mini' name="month" onChange={onChange} placeholder="몇월" defaultValue={props.inputs.month} />
+          <Input name="month" onChange={onChange} label={{ content: '월' }} labelPosition='right' placeholder="13" defaultValue={props.inputs.month} />
           <span>/</span>
-          <Input size='mini' name="date" onChange={onChange} placeholder="몇일" defaultValue={props.inputs.date} className="second-input" />
+          <Input name="date" onChange={onChange} label={{ content: '일' }} labelPosition='right' placeholder="27" defaultValue={props.inputs.date} className="second-input" />
         </div>
-      </div>
-      <div className="input-box">
-        <p>서명</p>
+
+        <Header as='h3'>서명</Header>
         <div className="sign-div">
           <canvas
             id="signCanvas"
             ref={canvasRef}
-            style={{ border: '3px solid black' }}
+            style={{ border: '3px solid black',marginRight:'10px' }}
             width={166}
             height={90}
             onMouseDown={startDraw}
@@ -236,9 +207,6 @@ const UserInput = (props) => {
           ></canvas>
           <Button onClick={clearCanvas}>다시 그리기</Button>
         </div>
-      </div>
-
-
     </div>
   )
   
