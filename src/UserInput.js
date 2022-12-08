@@ -7,6 +7,7 @@ const UserInput = (props) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState();
   const canvasRef = useRef();
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -80,10 +81,10 @@ const UserInput = (props) => {
 
       }
     setImage(canvasRef.current.toDataURL())
-    // props.setInputs({
-    //   ...props.inputs,
-    //   sign: image
-    // })
+    props.setInputs({
+      ...props.inputs,
+      sign: image
+    })
 
   }
 
@@ -109,10 +110,10 @@ const UserInput = (props) => {
       }
     }
     setImage(canvasRef.current.toDataURL())
-    // props.setInputs({
-    //   ...props.inputs,
-    //   sign: image
-    // })
+    props.setInputs({
+      ...props.inputs,
+      sign: image
+    })
 
   }
 
@@ -136,23 +137,36 @@ const UserInput = (props) => {
     { key: '1', value: '1', text: '사유' },
   ]
 
+
+  const imgRef = useRef();
+
+  // 이미지 상대경로 저장
+  const handleAddImages = (event) => {
+    const imageLists = event.target.files;
+    let imageUrlLists = [];
+    
+    for (let i = 0; i < imageLists.length; i++) {
+      const currentImageUrl = URL.createObjectURL(imageLists[i]);
+      imageUrlLists.push(currentImageUrl);
+    }
+    
+    if (imageUrlLists.length > 10) {
+      imageUrlLists = imageUrlLists.slice(0, 10);
+    }
+    
+    // console.log(showImages)
+    props.setInputs({
+      ...props.inputs,
+      addImage: imageUrlLists
+    })
+  };
+
   return (
     <div className="">
-      <div className="input-box  input-once">
-        <Input label='이름' name="name" onChange={onChange} placeholder="홍길동" /> <br />
-      </div>
-      <div className="input-box">
-        <div className="input-flex">
-          <Input label='지역' name="location" onChange={onChange} placeholder="서울" />
-
-          <Input label='반' name="classNum" onChange={onChange} placeholder="13" className="second-input" />
-        </div>
-      </div>
-      <div className="input-box">
-        <div className="input-flex">
-          <Input label='생년월일' name="birth" onChange={onChange} placeholder="990306" />
-        </div>
-      </div>
+        <Input label='이름' name="name" onChange={onChange} placeholder="홍길동" style={{width: '100px',marginRight: '50px'}} /> 
+        <Input label='지역' name="location" onChange={onChange} placeholder="서울" style={{width: '100px',marginRight: '50px'}} />
+        <Input label='반' name="classNum" onChange={onChange} placeholder="13" className="second-input" style={{width: '50px',marginRight: '50px'}}/>
+        <Input label='생년월일' name="birth" onChange={onChange} placeholder="990306" />
       <Divider />
       <div className="input-box">
         <Header as='h3'>사유 일자</Header>
@@ -162,10 +176,10 @@ const UserInput = (props) => {
           {/* <span>/</span> */}
           <Input  name="attendanceDay" label={{ content: '일' }} labelPosition='right' onChange={onChange} placeholder="27" className="second-input" style={{width: '50px',marginRight: '50px'}}/>          
       <Header as='h3'>사유 기간</Header>
-      <Select name="attendanceTime" onChange={handleOnChange} placeholder='선택해주세요' options={attendanceTimeOptions}/>
+      <Select name="attendanceTime" onChange={handleOnChange} placeholder='선택해주세요' options={attendanceTimeOptions} style={{marginLeft: '10px'}}/>
 
       <Header as='h3'>공가/사유 선택, 사유 내용</Header>
-      <Input fluid labelPosition='Left' type='text' placeholder='사유내용'>
+      <Input fluid labelPosition='left' type='text' placeholder='사유내용'>
         <Label>
           <Dropdown name="attendanceType" onChange={handleOnChange} defaultValue='0' options={attendanceTypeOptions}></Dropdown>
         </Label>
@@ -207,6 +221,9 @@ const UserInput = (props) => {
           ></canvas>
           <Button onClick={clearCanvas}>다시 그리기</Button>
         </div>
+        <Header as='h3'>증빙자료 첨부</Header>
+        <Input type="file" accept="image/*" multiple  onChange={handleAddImages} ref={imgRef} id="fileUpload" />
+        
     </div>
   )
   

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 // import img from './지원금.PNG'
 import img from './사유서1.jpg'
+import img1 from './사유서2.jpg'
+import img2 from './사유서3.jpg'
 // import "./App.css"
 import { Button, Modal,Image as Images } from 'semantic-ui-react'
 import jsPDF from 'jspdf'
@@ -11,15 +13,13 @@ const Canvas = (props) => {
   const canvasRef = useRef();
   const canvasRefFont = useRef();
   const canvasRefSubmit = useRef();
+  const canvasRefaddfile = useRef();
   const signRef = useRef();
-  let canvas, canvasFont, canvasSubmit;
-  let ctx, ctxFont, ctxSubmit;
+  let canvas, canvasFont, canvasSubmit,canvasAddfile;
+  let ctx, ctxFont, ctxSubmit,ctxAddfile;
   let image;
 
-  useEffect(()=>{
-    toImage()
-    console.log(props.inputs)
-  }, [props.inputs])
+
 
   function draw() {
 
@@ -139,9 +139,14 @@ const Canvas = (props) => {
     pdf.addImage(link.href, 'JPEG', 0, 0, width, height);
     pdf.save(fileName+".pdf");
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // link.click();
+    // document.body.removeChild(link);
   }
+  function reloadCanvas() {
+    clearCanvas()
+    toImage()
+  }
+
 
   function toImage() {
     draw()
@@ -156,23 +161,51 @@ const Canvas = (props) => {
     setTestSrc(canvasSubmit.toDataURL());
   }
 
-  useEffect(() => {
-    clearCanvas()
-    toImage()
-  })
+
+  useEffect(()=>{
+    const tiemrId = setTimeout(()=>{
+        reloadCanvas()
+    },1000);
+    return ()=>clearTimeout(tiemrId);
+  },)
 
 
-
+  useEffect(()=>{
+    canvas = canvasRef.current;
+    canvasFont = canvasRefFont.current;
+    canvasSubmit = canvasRefSubmit.current;
+    canvasAddfile = canvasRefaddfile.current;
+    ctx = canvas.getContext('2d')
+    ctxFont = canvasFont.getContext('2d')
+    ctxSubmit = canvasSubmit.getContext('2d')
+    ctxAddfile = canvasAddfile.getContext('2d')
+    image = new Image();
+    image.onload = () => {
+      ctx.drawImage(image, 0, 0)
+    }
+    image.src = img
+    ctxSubmit.drawImage(canvas, 0, 0);
+    ctxSubmit.drawImage(canvasFont, 0, 0);
+    setTestSrc(canvasSubmit.toDataURL());
+  },[])
 
 
   return (
     <>
-      <Images Fluid src={testSrc} alt="이미지 결과보기" />
-
+      <Button onClick={reloadCanvas}>새로고침</Button>
       <Button onClick={downloadCanvas} primary>
-            {'다운로드  >'}
-          </Button>
-          <div >
+      {'PDF 다운로드'}
+      </Button>
+      <Images fluid src={testSrc} alt="이미지 결과보기" />
+      {props.inputs.addImage.map((image, id) => (
+            <div key={id}>
+              <img src={image} alt={`${image}-${id}`} />
+              {/* {image} */}
+            </div>
+          ))
+      }
+
+      <div >
         <canvas
           style={{ display: 'none' }}
           id="canvasTop"
@@ -191,6 +224,13 @@ const Canvas = (props) => {
           style={{ display: 'none' }}
           id="canvasSubmit"
           ref={canvasRefSubmit}
+          width={1654}
+          height={2339}
+        />
+        <canvas
+          style={{ display: 'none' }}
+          id="canvasAddfile"
+          ref={canvasRefaddfile}
           width={1654}
           height={2339}
         />
