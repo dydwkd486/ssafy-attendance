@@ -192,6 +192,7 @@ const Canvas = (props) => {
 
   return (
     <>
+    <div style={{maxHeight:"1200px",overflow:"auto"}}>
       <Button onClick={reloadCanvas}>새로고침</Button>
       <Button onClick={downloadCanvas} primary>
       {'PDF 다운로드'}
@@ -199,7 +200,7 @@ const Canvas = (props) => {
       <Images fluid src={testSrc} alt="이미지 결과보기" />
       {props.inputs.addImage.map((image, id) => (
             <div key={id}>
-              <img src={image} alt={`${image}-${id}`} />
+              <Images src={image} alt={`${image}-${id}`} />
               {/* {image} */}
             </div>
           ))
@@ -236,6 +237,7 @@ const Canvas = (props) => {
         />
       </div>
       <img src={props.inputs.sign} ref={signRef} width='10px' style={{ display: 'none' }} alt="sign" />
+      </div>
     </>
   )
 }
