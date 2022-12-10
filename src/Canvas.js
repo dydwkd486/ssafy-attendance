@@ -8,6 +8,7 @@ import { Button, Modal,Image as Images } from 'semantic-ui-react'
 import jsPDF from 'jspdf'
 const Canvas = (props) => {
   const [testSrc, setTestSrc] = useState('')
+  const [test1Src, setTest1Src] = useState('')
   const [open, setOpen] = React.useState(false)
 
   const canvasRef = useRef();
@@ -143,8 +144,8 @@ const Canvas = (props) => {
     // document.body.removeChild(link);
   }
   function reloadCanvas() {
-    clearCanvas()
-    toImage()
+    // clearCanvas()
+    // toImage()
   }
 
 
@@ -153,12 +154,15 @@ const Canvas = (props) => {
     canvas = canvasRef.current;
     canvasFont = canvasRefFont.current;
     canvasSubmit = canvasRefSubmit.current;
+    canvasAddfile = canvasRefaddfile.current;
     ctx = canvas.getContext('2d')
     ctxFont = canvasFont.getContext('2d')
     ctxSubmit = canvasSubmit.getContext('2d')
+    ctxAddfile = canvasAddfile.getContext('2d')
     ctxSubmit.drawImage(canvas, 0, 0);
     ctxSubmit.drawImage(canvasFont, 0, 0);
     setTestSrc(canvasSubmit.toDataURL());
+    setTest1Src(ctxAddfile.toDataURL());
   }
 
 
@@ -170,23 +174,47 @@ const Canvas = (props) => {
   },)
 
 
+  // canvas = canvasRef.current;
+  // canvasFont = canvasRefFont.current;
+  // ctx = canvas.getContext('2d')
+  // ctxFont = canvasFont.getContext('2d')
+  // image = new Image();
+  // image.onload = () => {
+  //   ctx.drawImage(image, 0, 0)
+  // }
+  // image.src = img
+
+  function addImageProcess(src) {
+    return new Promise((resolve, reject) => {
+      canvas = canvasRef.current;
+      canvasFont = canvasRefFont.current;
+      canvasSubmit = canvasRefSubmit.current;
+
+      ctx = canvas.getContext('2d')
+      ctxFont = canvasFont.getContext('2d')
+      ctxSubmit = canvasSubmit.getContext('2d')
+
+      let img = new Image()
+      img.onload =  () => ctx.drawImage(img, 0, 0)
+      img.onerror = reject
+      img.src = src
+
+      
+      resolve(canvas)
+    })
+  }
+
+ // 처음 시작할때 실행됨.
   useEffect(()=>{
-    canvas = canvasRef.current;
-    canvasFont = canvasRefFont.current;
     canvasSubmit = canvasRefSubmit.current;
-    canvasAddfile = canvasRefaddfile.current;
-    ctx = canvas.getContext('2d')
-    ctxFont = canvasFont.getContext('2d')
     ctxSubmit = canvasSubmit.getContext('2d')
-    ctxAddfile = canvasAddfile.getContext('2d')
-    image = new Image();
-    image.onload = () => {
-      ctx.drawImage(image, 0, 0)
-    }
-    image.src = img
-    ctxSubmit.drawImage(canvas, 0, 0);
-    ctxSubmit.drawImage(canvasFont, 0, 0);
-    setTestSrc(canvasSubmit.toDataURL());
+    addImageProcess(img).then(img1 => {
+      console.log(img1)
+      ctxSubmit.drawImage(img1, 0, 0);
+      ctxSubmit.drawImage(canvasFont, 0, 0);
+      
+      setTestSrc(canvasSubmit.toDataURL());
+    })
   },[])
 
 
