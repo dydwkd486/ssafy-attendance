@@ -5,7 +5,7 @@
 
 # 프로젝트 설치 및 실행방법
 ### 프로젝트 접속
-- https://dydwkd486.github.io/ssafy-sign/ 접속하며 사용하기
+- https://dydwkd486.github.io/ssafy-attendance/ 접속하며 사용하기
 ### 프로젝트 설치 및 실행
 - 프로젝트를 클론한 뒤 npm start을 실행함.
 - 실행과 동시에 node에서 필요한 것들이 자동으로 설치 되고 실행됨.
